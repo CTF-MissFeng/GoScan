@@ -106,10 +106,10 @@ $ nohup ./Clinet &
 
 ### 四、演示
 
-![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/1.png)
+![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/1.png)
 
-![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/2.png)
+![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/2.png)
 
-![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/3.png)
+![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/3.png)
 
-![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/4.png)
+![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/4.png)
