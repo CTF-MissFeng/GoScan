@@ -2,7 +2,7 @@
 > GoScan是采用Golang语言编写的一款分布式综合资产管理系统，适合红队、SRC等使用。
 
 ### 一、项目说明
-> 没啥可写的，占个位置吧
+> 演示地址：http://112.74.169.239/     test/admin888
 
 
 ### 二、部署教程
@@ -103,3 +103,13 @@ $ nohup ./Clinet &
 
 端口扫描：采用golang开发端口扫描器（Syn探测+精简服务指纹库）
 ```
+
+### 四、演示
+
+![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/1.png)
+
+![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/2.png)
+
+![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/3.png)
+
+![index](https://github.com/CTF-MissFeng/GoScan/blob/master/doc/4.png)
