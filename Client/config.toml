@@ -1,0 +1,14 @@
+# Server服务配置
+[Server]
+    Host = "127.0.0.1:9999" # GoScan Web服务地址
+    Password = "admin888" # 用于Client同步配置所需密码，运行后请勿修改此值，否则Client同步配置信息失败
+
+# 端口扫描配置
+[PortScan]
+    Enabled = true # 是否开启端口扫描功能
+    Level = "all" # 日志输出级别 ALL、DEBUG、INFO、WARNING、ERROR
+
+# 子域名扫描配置
+[Domain]
+    Enabled = true # 是否开启子域名扫描功能
+    Level = "all" # 日志输出级别

@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Web指纹添加</title>
+    <meta content="webkit" name="renderer">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+    <link href="/lib/layui-v2.5.5/css/layui.css" media="all" rel="stylesheet">
+    <link href="/css/public.css" media="all" rel="stylesheet">
+    <link href="/lib/json-viewer/jsoneditor.min.css" media="all" rel="stylesheet">
+    <link href="/lib/json-viewer/bootstrap.min.css" media="all" rel="stylesheet">
+    <style>
+        div.jsoneditor-menu {
+            background-color: #96b97d;
+
+        }
+        div.jsoneditor {
+            border: 1px solid #96b97d;
+        }
+        @media (min-width: 768px) {
+            .col-sm-2 {
+                width: 4%;
+                margin-left: -15px;
+            }
+            .col-sm-5 {
+                width: 48%
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">指纹规则里website字段为测试url地址，识别成功方可添加指纹；同一应用不应该有多条指纹; name字段不可重复；</div>
+</div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <div id="jsoneditor1" style="height: 600px; width: 100%"></div>
+                        </div>
+                        <div class="col-sm-2">
+                            <button id="toTree"><span class="glyphicon glyphicon-arrow-right"></span></button>
+                            <p></p>
+                            <p><button id="toCode"><span class="glyphicon glyphicon-arrow-left"></span></button></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <div id="jsoneditor2" style="height: 600px; width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<button type="button" class="layui-btn layui-btn-fluid" id="BanalyzeAdd_form">提交指纹</button>
+
+<hr class="layui-bg-red">
+<div class="layui-card">
+    <div class="layui-card-header">指纹规则参考字段</div>
+    <div class="layui-card-body">
+        <table class="layui-table">
+            <colgroup>
+                <col width="200">
+                <col width="600">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>参数</th>
+                <th>说明</th>
+                <th>例子</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>name(必须参数)</td>
+                <td>指纹名称(不可重复):字符串</td>
+                <td>"name": "seeyon"</td>
+            </tr>
+            <tr>
+                <td>website(必须参数)</td>
+                <td>测试指纹识别url:字符串</td>
+                <td>"website": "http://example.com"</td>
+            </tr>
+            <tr>
+                <td>description(必须参数)</td>
+                <td>该指纹简短描述</td>
+                <td>"description": "phpcms是一款由php语言开发的cms程序"</td>
+            </tr>
+            <tr>
+                <td>jump</td>
+                <td>有些指纹需要访问特定path才能获取:数组</td>
+                <td>"jump": ["/phpinfo","/xxxx"]</td>
+            </tr>
+            <tr>
+                <td>implies</td>
+                <td>推断(如phpcms一定是php开发的):数组</td>
+                <td>"implies": ["PHP"]</td>
+            </tr>
+            <tr>
+                <td>cookies</td>
+                <td>匹配cookie字段(正则表达式):字典</td>
+                <td>"cookies":{"cookie_name":"xxx"}</td>
+            </tr>
+            <tr>
+                <td>headers</td>
+                <td>headers头匹配(正则表达式):字典</td>
+                <td>"headers":{"Server":"^apache(.*)\;version:\1"}</td>
+            </tr>
+            <tr>
+                <td>meta</td>
+                <td>meta匹配(正则表达式):字典</td>
+                <td>"meta":{"token":"(\d+)\;version:\1"}</td>
+            </tr>
+            <tr>
+                <td>html</td>
+                <td>html匹配(正则表达式):数组</td>
+                <td>"html":["xxx","xxx"]</td>
+            </tr>
+            <tr>
+                <td>script</td>
+                <td>script匹配(正则表达式):数组</td>
+                <td>"script":["xxx","xxx"]</td>
+            </tr>
+            <tr>
+                <td>url</td>
+                <td>url匹配(正则表达式):数组</td>
+                <td>"url":["xxx","xxx"]</td>
+            </tr>
+            <tr>
+                <td>flag</td>
+                <td>flag(AND逻辑匹配,提交的规则必须都匹配上,默认为false,只要匹配到一个规则就算成功):布尔</td>
+                <td>"flag": true</td>
+            </tr>
+            <tr>
+                <td>提取匹配文本</td>
+                <td>匹配文本\\;version:\\1:(获取相应匹配文本,\\1表示获取第一个匹配文本，最大支持3)</td>
+                <td>(.*)\\;version:\\1</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<br/>
+
+<script charset="utf-8" src="/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script charset="utf-8" src="/lib/layui-v2.5.5/layui.js"></script>
+<script charset="utf-8" src="/lib/json-viewer/jsoneditor.min.js"></script>
+
+<script>
+    layui.use(['form'], function() {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+        var container1 = document.getElementById('jsoneditor1');
+        var container2 = document.getElementById('jsoneditor2');
+        var optionsOutput1 = {
+            mode: 'code',
+            error: function(err) {
+                alert('EF1 ->' + err.toString());
+            }
+        };
+        var optionsOutput2 = {
+            mode: 'tree',
+            modes: ['view', 'form', 'text', 'code', 'tree'], // allowed modes
+            error: function(err) {
+                alert('EF1 ->' + err.toString());
+            }
+        };
+        var json = [{
+            "name": "Sangfor SSL VPN",
+            "description": "深信服VPN",
+            "html": ["login_psw.csp","por/jsdata.csp"],
+            "cookies":{"language":"\\S+"},
+            "flag": true,
+            "website": "https://vpn.ruc.edu.cn"
+        }];
+        var editor1 = new JSONEditor(container1, optionsOutput1, json);
+        var editor2 = new JSONEditor(container2, optionsOutput2, json);
+        editor2.expandAll();
+        $("#toTree").click(function() {
+            var jsonStr = editor1.getText();
+            editor2.setText(jsonStr);
+            editor2.setMode("tree");
+            editor2.expandAll();
+        });
+        $("#toCode").click(function() {
+            var jsonStr = editor2.getText();
+            var jsonObject = JSON.parse(jsonStr);
+            editor1.setText(JSON.stringify(jsonObject, null, 2));
+            editor1.setMode("code");
+        })
+        function getType(obj) {
+            var type = typeof obj;
+
+            if (obj instanceof Array) {
+                return 'array';
+            } else if (type == 'string') {
+                return 'string';
+            } else if (type == 'boolean') {
+                return 'boolean';
+            } else if (type == 'number') {
+                return 'number';
+            } else if (type == 'undefined' || obj === null) {
+                return 'null';
+            } else {
+                return 'hash';
+            }
+        }
+        function convert(obj, ret) {
+            var type = getType(obj);
+
+            switch (type) {
+                case 'array':
+                    convertArray(obj, ret);
+                    break;
+                case 'hash':
+                    convertHash(obj, ret);
+                    break;
+                case 'string':
+                    convertString(obj, ret);
+                    break;
+                case 'null':
+                    ret.push('null');
+                    break;
+                case 'number':
+                    ret.push(obj.toString());
+                    break;
+                case 'boolean':
+                    ret.push(obj ? 'true' : 'false');
+                    break;
+            }
+        }
+        function convertArray(obj, ret) {
+            for (var i = 0; i < obj.length; i++) {
+                var ele = obj[i];
+                var recurse = [];
+                convert(ele, recurse);
+
+                for (var j = 0; j < recurse.length; j++) {
+                    ret.push((j == 0 ? "- \n   " : spacing) + recurse[j]);
+                }
+            }
+        }
+        function convertHash(obj, ret) {
+            for (var k in obj) {
+                var recurse = [];
+                if (obj.hasOwnProperty(k)) {
+                    var ele = obj[k];
+                    convert(ele, recurse);
+                    var type = getType(ele);
+                    if (type == 'string' || type == 'null' || type == 'number' || type == 'boolean') {
+                        ret.push(normalizeString(k) + ': ' + recurse[0]);
+                    } else {
+                        ret.push(normalizeString(k) + ': ');
+                        for (var i = 0; i < recurse.length; i++) {
+                            ret.push(spacing + recurse[i]);
+                        }
+                    }
+                }
+            }
+        }
+        function normalizeString(str) {
+            if (str.match(/^[\w]+$/)) {
+                return str;
+            } else {
+                return JSON.stringify(str);
+            }
+        }
+        function convertString(obj, ret) {
+            ret.push(normalizeString(obj));
+        }
+
+        // 监听提交按钮
+        $("#BanalyzeAdd_form").click(function(event){
+            var jsonStr = JSON.stringify(editor1.get());
+            var loading = layer.load();
+            $.ajax({
+                url: "/api/util/banalyze/add",
+                data: jsonStr,
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                async: true,
+                type: 'post',
+                success: function(result) {
+                    layer.close(loading);
+                    if (result.code == 200) {
+                        var index = layer.alert(result.msg, {
+                            title: '提示',
+                            icon: 1
+                        }, function() {
+                            parent.layui.table.reload("currentTable_Banalyze");
+                            layer.close(index);
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        })
+                    } else {
+                        layer.alert(result.msg, {
+                            title: '提示',
+                            icon: 2
+                        })
+                    }
+                },
+                error: function (e) {
+                    layer.close(loading);
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+            return false;
+        })
+    });
+</script>
+</body>
+</html>

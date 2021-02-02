@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>扫描引擎管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;
+            padding-right: 10px;
+            line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <blockquote class="layui-elem-quote layui-quote-nm">
+            扫描引擎配置参数是Client端运行所需参数，用于动态下发配置信息,请认真填写！
+        </blockquote>
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">消息队列</li>
+                <li>端口扫描</li>
+                <li>子域名探测</li>
+                <li>API秘钥</li>
+                <li>Web探测</li>
+                <li>任务详情</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form layuimini-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">Server投递地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="NsqHost" id="NsqHost" lay-verify="required" value="1.1.1.1:4150"
+                                       valay-reqtext="Server投递地址不能为空" placeholder="请输入消息投递地址"
+                                       class="layui-input">
+                                <tip>说明：设置NSQ消息投递地址(外网IP+端口)，此消息队列专门用于Server端投递消息给Client端</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">Client投递地址</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="CNsqHost" id="CNsqHost" lay-verify="required" value="1.1.1.1:4151"
+                                       valay-reqtext="消息投递地址不能为空" placeholder="请输入消息投递地址"
+                                       class="layui-input">
+                                <tip>说明：设置NSQ消息投递地址(外网IP+端口)，此消息队列专门用于Client端处理结果后投递消息给Server端</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">配置更新时间</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Time" id="Time" lay-verify="required|number" value="9999"
+                                       valay-reqtext="配置更新时间不能为空" placeholder="请输入配置更新时间"
+                                       class="layui-input">
+                                <tip>
+                                    格式：Client端多久更新一次配置信息,单位分钟
+                                </tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="NSQbtn">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-form layuimini-form" lay-filter="PortScanFilter">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">端口</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Ports" id="Ports" lay-verify="required" value="top1000"
+                                       valay-reqtext="端口参数不能为空" placeholder="请输入端口参数"
+                                       class="layui-input">
+                                <tip>
+                                    格式：80(单端口)、21,22,23(指定多个端口)、1-100(端口范围)、top100(内置top100端口)、top1000(内置top1000端口)、full(全部端口)
+                                </tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">扫描速率</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Rate" id="Rate" lay-verify="required|number" value="1000"
+                                       valay-reqtext="扫描速率不能为空" placeholder="请输入扫描速率"
+                                       class="layui-input">
+                                <tip>扫描速率过大会导致扫描结果不全,外网扫描建议不超过2000</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">探测超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Timeout" id="Timeout" lay-verify="required|number" value="1000"
+                                       valay-reqtext="扫描超时不能为空"
+                                       placeholder="请输入扫描超时" class="layui-input">
+                                <tip>默认为10s</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">存活探测</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="Ping" id="Ping" lay-skin="switch" lay-filter="switchPing"
+                                       lay-text="ON|OFF">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">优先探测</label>
+                            <div class="layui-input-block">
+                                <select name="Detection" id="Detection" lay-filter="youxian">
+                                    <option value="null">无</option>
+                                    <option value="top100">top-100</option>
+                                    <option value="top1000">top-1000</option>
+                                </select>
+                                <tip>对于禁ping扫描，会扫描所有主机(不管是否存活),会浪费大量时间，可使用优先探测top100或top1000端口进行存活扫描</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">指纹超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="NmapTimeout" id="NmapTimeout" lay-verify="required|number" value="7"
+                                       valay-reqtext="指纹识别超时不能为空"
+                                       placeholder="请输入指纹识别超时" class="layui-input">
+                                <tip>指纹识别超时默认为7s</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">WAF过滤</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="WafNum" id="WafNum" lay-verify="required|number" value="50"
+                                       valay-reqtext="waf过滤不能为空"
+                                       placeholder="请输入waf过滤" class="layui-input">
+                                <tip>默认单个主机超过50个端口开放则判定为waf，不继续探测</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">重试次数</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Retries" id="Retries" lay-verify="required|number" value="1"
+                                       valay-reqtext="重试次数不能为空" placeholder="请输入重试次数"
+                                       class="layui-input">
+                                <tip>若超时则重新探测</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">二次验证</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="Verify" id="Verify" lay-skin="switch" lay-filter="switchVerify"
+                                       lay-text="ON|OFF">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">消息队列超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="NsqTimeout" id="NsqTimeout" lay-verify="required|number" value="600"
+                                       valay-reqtext="消息队列返回超时不能为空" placeholder="请输入消息队列超时时间"
+                                       class="layui-input">
+                                <tip>返回给消息队列服务器超时时间,如果在规定时间内未扫描完则消息回退，一般全端口扫描不超时10分钟</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="PortScanbtn">保存
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-form layuimini-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">模块超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Timeout" id="DomainTimeout" lay-verify="required|number" value="60"
+                                       valay-reqtext="超时不能为空" placeholder="请输入超时时间"
+                                       class="layui-input">
+                                <tip>被动搜索子域名超时时间,如使用baidu搜索子域名单个模块的超时时间,单位秒</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">搜索超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="MaxEnumTime" id="MaxEnumTime" lay-verify="required|number" value="30"
+                                       valay-reqtext="超时不能为空" placeholder="请输入超时时间"
+                                       class="layui-input">
+                                <tip>被动搜索子域名所有模块整体超时时间,单位分钟,若量大,则设置长一点</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">消息队列超时</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="NsqTimeout" id="DomainNsqTimeout" lay-verify="required|number" value="1800"
+                                       valay-reqtext="消息队列返回超时不能为空" placeholder="请输入消息队列超时时间"
+                                       class="layui-input">
+                                <tip>返回给消息队列服务器超时时间,如果在规定时间内未扫描完则消息回退,单位秒</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="Domainbtn">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-form layuimini-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label required">shodan</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Shodan" id="Shodan" lay-verify="required" value=""
+                                       valay-reqtext="Shodan API秘钥不能为空" placeholder="请输入shodan API秘钥"
+                                       class="layui-input">
+                                <tip>说明：用于端口扫描及子域名，免费注册：https://www.shodan.io</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Binaryedge</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Binaryedge" id="Binaryedge" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://app.binaryedge.io</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">CensysToken</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="CensysToken" id="CensysToken" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://censys.io</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">CensysSecret</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="CensysSecret" id="CensysSecret" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://censys.io</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Certspotter</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Certspotter" id="Certspotter" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://sslmate.com/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">GitHub</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="GitHub" id="GitHub" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://github.com/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Spyse</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Spyse" id="Spyse" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://spyse.com/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Securitytrails</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Securitytrails" id="Securitytrails" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://securitytrails.com/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">ThreatBook</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="ThreatBook" id="ThreatBook" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://x.threatbook.cn/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">URLScan</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="URLScan" id="URLScan" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://urlscan.io/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">Virustotal</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="Virustotal" id="Virustotal" placeholder="请输入"
+                                       class="layui-input">
+                                <tip>说明：用于子域名搜索，免费注册：https://www.virustotal.com/</tip>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="KEYbtn">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">
+                    web扫描管理
+                </div>
+                <div class="layui-tab-item">
+
+                    <fieldset class="table-search-fieldset">
+                        <legend>子域名扫描消息队列详情</legend>
+                        <div style="margin: 10px 10px 10px 10px">
+                            <script type="text/html" id="toolbarDomainNsqd">
+                                <div class="layui-btn-container">
+                                    <button class="layui-btn layui-btn-sm" lay-event="RefreshDomain">刷新</button>
+                                    <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="emptyDomain">清空消息队列</button>
+                                    <span class="layui-badge layui-bg-orange" id="domain_message_count">消息总数：0</span>
+                                    <span class="layui-badge layui-bg-green" id="domain_message_bytes">消息大小：0 byte</span>
+                                    <span class="layui-badge layui-bg-blue" id="domain_client_count">客户端：0个</span>
+                                    <span class="layui-badge layui-bg-cyan" id="domain_timeout_count">消息超时：0个</span>
+                                </div>
+                            </script>
+
+                            <table class="layui-hide" id="currentTable_DomainNsqd" lay-filter="DomainNsqd_Filter"></table>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="table-search-fieldset">
+                        <legend>端口扫描消息队列详情</legend>
+                        <div style="margin: 10px 10px 10px 10px">
+                            <script type="text/html" id="toolbarPortNsqd">
+                                <div class="layui-btn-container">
+                                    <button class="layui-btn layui-btn-sm" lay-event="RefreshPort">刷新</button>
+                                    <button class="layui-btn layui-btn-danger layui-btn-sm" lay-event="emptyPort">清空消息队列</button>
+                                    <span class="layui-badge layui-bg-orange" id="port_message_count">消息总数：0</span>
+                                    <span class="layui-badge layui-bg-green" id="port_message_bytes">消息大小：0 byte</span>
+                                    <span class="layui-badge layui-bg-blue" id="port_client_count">客户端：0个</span>
+                                    <span class="layui-badge layui-bg-cyan" id="port_timeout_count">消息超时：0个</span>
+                                </div>
+                            </script>
+                            <table class="layui-hide" id="currentTable_PortNsqd" lay-filter="PortNsqd_Filter"></table>
+                        </div>
+                    </fieldset>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'element', 'table'], function () {
+        var form = layui.form,
+            $ = layui.jquery,
+            layer = layui.layer,
+            table = layui.table;
+
+        //监听存活探测开关
+        form.on('switch(switchPing)', function (data) {
+            if (this.checked) {
+                layer.tips('温馨提示：开启存活探测会漏掉防火墙禁ping的主机,但会加快扫描速度', data.othis)
+            }
+        });
+
+        //监听二次验证开关
+        form.on('switch(switchVerify)', function (data) {
+            if (this.checked) {
+                layer.tips('温馨提示：二次验证使用connect连接验证扫描出的端口，但会浪费一点时间,提高准确度', data.othis)
+            }
+        });
+
+		//监听NSQ消息队列提交
+		form.on('submit(NSQbtn)', function(data) {
+			$.ajax({
+				url: "/api/scan/engine/nsq",
+				data: JSON.stringify(data.field),
+				contentType: 'application/json;charset=UTF-8',
+				dataType: 'json',
+				type: 'post',
+				success: function(result) {
+					if (result.code == 200) {
+						layer.alert("消息队列配置保存成功", {
+							title: '提示',
+							icon: 1
+						})
+					} else {
+						layer.alert(result.msg, {
+							title: '提示',
+							icon: 2
+						})
+					}
+				},
+				error: function (e) {
+					layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+				}
+			})
+			return false;
+		});
+
+        //监听端口扫描提交
+        form.on('submit(PortScanbtn)', function(data) {
+            $.ajax({
+                url: "/api/scan/engine/portscan",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                type: 'post',
+                success: function(result) {
+                    if (result.code == 200) {
+                        layer.alert("端口扫描配置保存成功", {
+                            title: '提示',
+                            icon: 1
+                        })
+                    } else {
+                        layer.alert(result.msg, {
+                            title: '提示',
+                            icon: 2
+                        })
+                    }
+                },
+                error: function (e) {
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+            return false;
+        });
+
+        //监听子域名提交
+        form.on('submit(Domainbtn)', function(data)  {
+            $.ajax({
+                url: "/api/scan/engine/domain",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                type: 'post',
+                success: function(result) {
+                    if (result.code == 200) {
+                        layer.alert("子域名配置保存成功", {
+                            title: '提示',
+                            icon: 1
+                        })
+                    } else {
+                        layer.alert(result.msg, {
+                            title: '提示',
+                            icon: 2
+                        })
+                    }
+                },
+                error: function (e) {
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+            return false;
+        });
+
+        //监听API秘钥提交
+        form.on('submit(KEYbtn)', function(data)  {
+            $.ajax({
+                url: "/api/scan/engine/apikey",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                type: 'post',
+                success: function(result) {
+                    if (result.code == 200) {
+                        layer.alert("API秘钥配置保存成功", {
+                            title: '提示',
+                            icon: 1
+                        })
+                    } else {
+                        layer.alert(result.msg, {
+                            title: '提示',
+                            icon: 2
+                        })
+                    }
+                },
+                error: function (e) {
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+            return false;
+        });
+
+        function GetEngineInfo() {
+            $.ajax({
+                url: "/api/scan/engine/info",
+                dataType: 'json',
+                type: 'get',
+                success: function (result) {
+                    $("#NsqHost").attr("value", result.nsq.nsqd_host);
+                    $("#CNsqHost").attr("value", result.nsq.cnsqd_host);
+                    $("#Time").attr("value", result.nsq.time);
+
+                    $("#Ports").attr("value", result.portscan.ports);
+                    $("#Rate").attr("value", result.portscan.rate);
+                    $("#Timeout").attr("value", result.portscan.timeout);
+                    if(result.portscan.detection==="null"){
+                        $("#Detection").get(0).selectedIndex=0
+                    }else if(result.portscan.detection==="top100"){
+                        $("#Detection").get(0).selectedIndex=1
+                    }else{
+                        $("#Detection").get(0).selectedIndex=2
+                    }
+
+                    $("#NmapTimeout").attr("value", result.portscan.nmap_timeout);
+                    $("#WafNum").attr("value", result.portscan.waf_num);
+                    $("#Retries").attr("value", result.portscan.retries);
+                    $("#NsqTimeout").attr("value", result.portscan.nsq_timeout);
+
+                    $("#DomainTimeout").attr("value", result.domain.timeout);
+                    $("#MaxEnumTime").attr("value", result.domain.max_enum_time);
+                    $("#DomainNsqTimeout").attr("value", result.domain.nsq_timeout);
+
+                    $("#Shodan").attr("value", result.apikey.shodan);
+                    $("#Binaryedge").attr("value", result.apikey.binaryedge);
+                    $("#CensysToken").attr("value", result.apikey.censys_token);
+                    $("#CensysSecret").attr("value", result.apikey.censys_secret);
+                    $("#Certspotter").attr("value", result.apikey.certspotter);
+                    $("#GitHub").attr("value", result.apikey.github);
+                    $("#Spyse").attr("value", result.apikey.spyse);
+                    $("#Securitytrails").attr("value", result.apikey.securitytrails);
+                    $("#ThreatBook").attr("value", result.apikey.threatbook);
+                    $("#URLScan").attr("value", result.apikey.urlscan);
+                    $("#Virustotal").attr("value", result.apikey.virustotal);
+                    form.render('select', 'PortScanFilter');
+                }
+            });
+        }
+        GetEngineInfo();
+
+        table.render({
+            elem: '#currentTable_DomainNsqd',
+            url: "/api/scan/engine/domainnsq",
+            toolbar: '#toolbarDomainNsqd',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'Refresh',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {field: 'hostname', width: 300, title: '客户端'},
+                {field: 'remote_address', width: 250, title: 'IP地址'},
+                {field: 'message_count', width: 150, title: '消息数'},
+                {field: 'finish_count', width: 150, title: '已处理'},
+                {field: 'connect_ts', minWidth: 180, title: '连接时间'},
+            ]],
+            // 数据渲染回调
+            done: function(res){
+                $("#domain_message_count").text("消息总数："+res.message_count + "条");
+                $("#domain_message_bytes").text("消息大小："+res.message_bytes);
+                $("#domain_client_count").text("客户端数："+res.client_count + "个");
+                $("#domain_timeout_count").text("消息超时："+res.timeout_count + "条");
+            },
+            skin: 'line'
+        });
+
+        table.render({
+            elem: '#currentTable_PortNsqd',
+            url: "/api/scan/engine/portnsq",
+            toolbar: '#toolbarPortNsqd',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'Refresh',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [[
+                {field: 'hostname', width: 300, title: '客户端'},
+                {field: 'remote_address', width: 250, title: 'IP地址'},
+                {field: 'message_count', width: 150, title: '消息数'},
+                {field: 'finish_count', width: 150, title: '已处理'},
+                {field: 'connect_ts', minWidth: 180, title: '连接时间'},
+            ]],
+            // 数据渲染回调
+            done: function(res){
+                $("#port_message_count").text("消息总数："+res.message_count + "条");
+                $("#port_message_bytes").text("消息大小："+res.message_bytes);
+                $("#port_client_count").text("客户端数："+res.client_count + "个");
+                $("#port_timeout_count").text("消息超时："+res.timeout_count + "条");
+            },
+            skin: 'line'
+        });
+
+        // 定时15s刷新信息
+        function callbackNsqd(){
+            table.reload('currentTable_DomainNsqd', {
+                page: {
+                    curr: 1
+                }
+                ,
+            }, 'data');
+            table.reload('currentTable_PortNsqd', {
+                page: {
+                    curr: 1
+                }
+                ,
+            }, 'data');
+        }
+        setInterval(callbackNsqd, 15000);
+
+        table.on('toolbar(DomainNsqd_Filter)', function (obj) {
+            if(obj.event === 'RefreshDomain'){
+                table.reload('currentTable_DomainNsqd', {
+                    page: {
+                        curr: 1
+                    }
+                    ,
+                }, 'data');
+            }else if(obj.event === 'emptyDomain'){
+                layer.confirm('确定清空子域名任务中现有消息队列中的数据吗？清空后未完成的任务也不会在执行了！', function (index) {
+                    $.ajax({
+                        url: "/api/scan/engine/emptydomain",
+                        data: "",
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        type: 'delete',
+                        success: function (result) {
+                            if (result.code == 200) {
+                                layer.alert('清空子域名扫描消息队列成功!', {title: '提示', icon: 1})
+                                layer.close(index);
+                                table.reload('currentTable_DomainNsqd', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                    ,
+                                }, 'data');
+                            } else {
+                                layer.alert(result.msg, {title: '提示', icon: 2})
+                            }
+                        },
+                        error: function (e) {
+                            layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                        }
+                    })
+                });
+            }
+        });
+
+        table.on('toolbar(PortNsqd_Filter)', function (obj) {
+            if(obj.event === 'RefreshPort'){
+                table.reload('currentTable_PortNsqd', {
+                    page: {
+                        curr: 1
+                    }
+                    ,
+                }, 'data');
+            }else if(obj.event === 'emptyPort'){
+                layer.confirm('确定清空端口扫描任务中现有消息队列中的数据吗？清空后未完成的任务也不会在执行了！', function (index) {
+                    $.ajax({
+                        url: "/api/scan/engine/emptyport",
+                        data: "",
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        type: 'delete',
+                        success: function (result) {
+                            if (result.code == 200) {
+                                layer.alert('清空端口扫描扫描消息队列成功!', {title: '提示', icon: 1})
+                                layer.close(index);
+                                table.reload('currentTable_PortNsqd', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                    ,
+                                }, 'data');
+                            } else {
+                                layer.alert(result.msg, {title: '提示', icon: 2})
+                            }
+                        },
+                        error: function (e) {
+                            layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                        }
+                    })
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>
