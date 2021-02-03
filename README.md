@@ -37,7 +37,11 @@
 端口扫描：采用golang开发端口扫描器（Syn探测+精简服务指纹库）
 ```
 
-### 二、演示
+### 二、部署教程
+> 项目分为web和client端，web端需要postgresql数据库，详情参考：https://github.com/CTF-MissFeng/GoScan/tree/1f51fd92805fa4468333b117a44610ed53edd4ba
+
+
+### 三、演示
 
 ![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/1.png)
 
