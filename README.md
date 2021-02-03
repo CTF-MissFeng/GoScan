@@ -38,15 +38,48 @@
 ```
 
 ### 二、部署教程
-> 项目分为web和client端，web端需要postgresql数据库，详情参考：https://github.com/CTF-MissFeng/GoScan/tree/1f51fd92805fa4468333b117a44610ed53edd4ba
+> web和client端都推荐linux运行
 
+#### web端
+
+```
+# 以ubuntu为例，照顾小白
+
+# 1、数据库安装：
+
+$ apt-get install postgresql postgresql-client # 安装数据库
+$ su postgres
+$ psql -U postgres     # 默认安装密码为空
+$ ALTER USER postgres WITH PASSWORD 'xxxxxx';     # 修改postgre用户数据库密码
+$ CREATE DATABASE goscan;     # 创建数据库
+$ \q    # 退出
+
+# 2、数据库导入,使用数据库管理工具连接postgresql数据库，导入项目路径下的sql文件： /Web/document/sql/GoScan.sql
+
+# 3、Nsq消息队列服务运行，需要运行2个nsq进程，4150和4151分别用于web端push消息，和client端push消息
+$ nohup ./client/nsqd -tcp-address 本机IP:4151 -http-address 127.0.0.1:10002 --data-path=./client > client.log 2>&1 &
+$ nohup ./server/nsqd -max-msg-timeout 1h -tcp-address 本机ip:4150 -http-address 127.0.0.1:10001 --data-path=./server > server.log 2>&1 &
+
+# 4、Web端运行：
+
+$ chmod +x Web
+# 编写config配置文件，参考项目中：GoScan/blob/main/Web/config/config.toml
+$ ./Web    # 配置完成，运行看是否成功
+$ nohup ./Web > web.log 2>&1 &       # 若运行成功则进行后台运行
+
+# 浏览器访问该web地址，默认账户密码：admin/admin888@A，登录后修改密码
+```
+
+#### Client端
+
+```
+# config配置文件参考：GoScan/blob/main/Client/config.toml
+```
 
 ### 三、演示
 
 ![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/1.png)
 
 ![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/2.png)
-
-![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/3.png)
 
 ![index](https://github.com/CTF-MissFeng/GoScan/blob/main/doc/4.png)
