@@ -3,6 +3,8 @@
 
 > Demo：http://112.74.169.239:9999/   test/admin888@A
 
+> 下载地址：https://github.com/CTF-MissFeng/GoScan/releases
+
 ### 一、项目特点
 > 往往在开发此类工具时，需要调用各种不同的三方工具(python、java、go)等语言编写好的资产搜集工具，调用时通过fork进程启动资产搜集工具，对于执行效率、部署都不太友好。
 
