@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Web详情</title>
+		<meta content="webkit" name="renderer">
+		<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1" name="viewport">
+		<link href="/lib/layui-v2.5.5/css/layui.css" media="all" rel="stylesheet">
+		<link href="/css/public.css" media="all" rel="stylesheet">
+	</head>
+	<body>
+
+		<div class="layui-fluid">
+			<div class="layui-row">
+				<div class="layui-col-sm5">
+					<div class="layui-card-header">爬虫数据</div>
+					<div class="layui-card-body" >
+						<div id="UrlTree"></div>
+					</div>
+					<div class="layui-card-header">敏感信息</div>
+					<div class="layui-card-body" >
+						<textarea name="secret" id="secret" rows=10 class="layui-textarea" disabled></textarea>
+					</div>
+				</div>
+				<div class="layui-col-sm7">
+					<div class="layui-card-header">网站截图</div>
+					<div class="layui-card-body">
+						<img id="img_pre" height="600" width="800">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script charset="utf-8" src="/lib/layui-v2.5.5/layui.js"></script>
+		<script>
+			layui.use(['tree','element','form'], function() {
+				var $ = layui.jquery,
+					tree = layui.tree,
+						element = layui.element,
+						form = layui.form;
+
+				var WebInfoUrl = localStorage.getItem("webinfo_url");
+				if (WebInfoUrl === ""){
+					var iframeIndex = parent.layer.getFrameIndex(window.name);
+					parent.layer.close(iframeIndex);
+				}
+
+				$.ajax({
+					url: "/api/scan/webinfo/tree",
+					type: 'post',
+					data: JSON.stringify({"url":WebInfoUrl}),
+					contentType: 'application/json;charset=UTF-8',
+					dataType: 'json',
+					success: function(result) {
+						if (result.code === 200){
+							$("#secret").text(result.secret);
+							$("#img_pre").attr("src", result.images);
+							tree.render({
+								elem: '#UrlTree',
+								isJump: true,
+								data: [
+									{
+									"title":"Js",
+									"children":result.jsdata,
+									},
+									{
+										"title":"Url",
+										"children":result.urldata
+									},
+									{
+										"title":"form",
+										"children":result.formsdata
+									},
+								],
+							});
+						}else{
+							tree.render({
+								elem: '#UrlTree',
+								data: [{"title":result.msg}],
+							});
+						}
+					},
+					error: function (e) {
+					     tree.render({
+					     	elem: '#UrlTree',
+					     	data: [{"title":"获取爬虫数据错误"}],
+					     });           
+					}
+				});
+
+			});
+		</script>
+	</body>
+	</body>
+</html>

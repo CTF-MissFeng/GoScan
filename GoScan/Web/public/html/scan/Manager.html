@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>厂商管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>厂商搜索</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">厂商名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="CusName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i>
+                                搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe624;</i>添加厂商</button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTable_customer" lay-filter="ManagerTableFilter"></table>
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-xs" lay-event="task"><i class="layui-icon">&#xe624;</i>添加资产</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</a>
+        </script>
+
+        <hr class="layui-bg-blue">
+
+        <fieldset class="table-search-fieldset">
+            <legend>主域名搜索</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">厂商名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="CusName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">主域名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="Domain" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn_domain"><i class="layui-icon"></i>
+                                搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-hide" id="currentTable_domain" lay-filter="DomainTableFilter"></table>
+
+
+    </div>
+</div>
+<script src="/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTable_customer',
+            url: "/api/scan/manager",
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [
+                [{
+                    field: 'id',
+                    width: 80,
+                    title: 'ID',
+                    sort: true
+                },
+                    {
+                        field: 'cus_name',
+                        width: 200,
+                        title: '厂商名'
+                    },
+                    {
+                        field: 'cus_subdomain_num',
+                        width: 130,
+                        title: '子域名'
+                    },
+                    {
+                        field: 'cus_port_num',
+                        width: 130,
+                        title: '端口'
+                    },
+                    {
+                        field: 'cus_web_num',
+                        width: 130,
+                        title: 'web'
+                    },
+                    {
+                        field: 'cus_vul_num',
+                        width: 130,
+                        title: '漏洞'
+                    },
+                    {
+                        field: 'cus_time',
+                        width: 300,
+                        title: '添加时间'
+                    },
+                    {
+                        title: '操作',
+                        minWidth: 150,
+                        toolbar: '#currentTableBar',
+                        align: "center"
+                    }
+                ]
+            ],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 20,
+            page: true,
+            skin: 'line'
+        });
+
+        table.render({
+            elem: '#currentTable_domain',
+            url: "/api/scan/domain",
+            toolbar: "",
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [
+                [{
+                    field: 'id',
+                    width: 80,
+                    title: 'ID',
+                    sort: true
+                },
+                    {
+                        field: 'cus_name',
+                        width: 200,
+                        title: '厂商名'
+                    },
+                    {
+                        field: 'domain',
+                        width: 200,
+                        title: '主域名'
+                    },
+                    {
+                        field: 'flag',
+                        width: 160,
+                        title: '扫描状态',
+                        templet:function(d){
+                            if (d.flag){
+                                d.flag = "已扫描";
+                            }else{
+                                d.flag = "未扫描";
+                            }
+                            return d.flag;
+                        },
+                    },
+                    {
+                        field: 'nsq_flag',
+                        width: 160,
+                        title: '消息状态',
+                        templet:function(d){
+                            if (d.nsq_flag){
+                                d.nsq_flag = "已投递";
+                            }else{
+                                d.nsq_flag = "未投递";
+                            }
+                            return d.nsq_flag;
+                        },
+                    },
+                    {
+                        field: 'create_at',
+                        minWidth: 500,
+                        title: '添加时间'
+                    },
+
+                ]
+            ],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 20,
+            page: true,
+            skin: 'line',
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+
+            //执行搜索重载
+            table.reload('currentTable_customer', {
+                page: {
+                    curr: 1
+                },
+                where: {
+                    searchParams: result
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        form.on('submit(data-search-btn_domain)', function (data) {
+            var result = JSON.stringify(data.field);
+
+            //执行搜索重载
+            table.reload('currentTable_domain', {
+                page: {
+                    curr: 1
+                },
+                where: {
+                    searchParams: result
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        table.on('toolbar(ManagerTableFilter)', function (obj) {
+            if (obj.event === 'add') { // 监听添加操作
+                var index = layer.open({
+                    title: '添加厂商',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: "/scan/manager/add",
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            }
+        });
+
+        table.on('tool(ManagerTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'delete') {
+                layer.confirm('确定删除该厂商吗?一旦删除则会删除全部相关联资产数据,这将会影响正在运行的任务，请确保任务已完成', function (index) {
+                    $.ajax({
+                        url: "/api/scan/manager",
+                        data: JSON.stringify(data),
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        type: 'delete',
+                        success: function (result) {
+                            if (result.code == 200) {
+                                layer.alert('删除厂商成功!', {
+                                    title: '提示',
+                                    icon: 1
+                                })
+                                obj.del();
+                                layer.close(index);
+                                table.reload('currentTable_domain', {
+                                    page: {
+                                        curr: 1
+                                    }
+                                    ,
+                                }, 'data');
+                            } else {
+                                layer.alert(result.msg, {
+                                    title: '提示',
+                                    icon: 2
+                                })
+                                layer.close(index);
+                            }
+                        },
+                        error: function (e) {
+                            layer.alert(JSON.stringify(e), {
+                                title: '提示',
+                                icon: 2
+                            })
+                        }
+                    })
+                });
+            }else if (obj.event === "task"){
+                localStorage.setItem("cus_name", data.cus_name);
+                var TaskWindows = layer.open({
+                    title: data.cus_name + '厂商 添加主域名任务',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: "/scan/manager/task",
+                });
+                $(window).on("resize", function () {
+                    layer.full(TaskWindows);
+                });
+            }
+        });
+
+        // 定时15s刷新信息
+        function callbackNsqd(){
+            table.reload('currentTable_domain', {
+                page: {
+                    curr: 1
+                }
+                ,
+            }, 'data');
+        }
+        setInterval(callbackNsqd, 15000);
+
+    });
+</script>
+
+</body>
+</html>

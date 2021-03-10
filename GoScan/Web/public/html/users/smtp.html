@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SMTP服务设置</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/public.css" media="all">
+    <link rel="stylesheet" href="/js/lay-module/step-lay/step.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding-top: 40px;">
+                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
+                        <div carousel-item>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">SMTP地址:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="host" id="host" value=""
+                                                   placeholder="请填写SMTP地址" class="layui-input" lay-verify="required"
+                                                   autocomplete="off" required/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">SMTP端口:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="port" id="port" value=""
+                                                   placeholder="请填写SMTP端口" class="layui-input"
+                                                   lay-verify="required|number"
+                                                   required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">用户名:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="username" id="username" value=""
+                                                   placeholder="请填写用户名" value="" class="layui-input"
+                                                   lay-verify="required" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">邮箱密码:</label>
+                                        <div class="layui-input-block">
+                                            <input type="password" name="password" id="password" value=""
+                                                   placeholder="请填写邮箱密码" value="" class="layui-input"
+                                                   lay-verify="required" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">发件人地址:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="sender" id="sender" value=""
+                                                   placeholder="请填写邮箱地址" value="" class="layui-input"
+                                                   lay-verify="required" required>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formStep">
+                                                &emsp;下一步&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">收件人邮箱：</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="Address" value=""
+                                                   placeholder="请填写收件人邮箱" class="layui-input"
+                                                   lay-verify="required|email"
+                                                   autocomplete="off" required/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">邮件标题:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="Title" placeholder="请填写测试邮件标题"
+                                                   class="layui-input" lay-verify="required" autocomplete="off"
+                                                   required/>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">邮件正文:</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" name="Content" placeholder="请填写测试邮件正文"
+                                                   class="layui-input" lay-verify="required" autocomplete="off"
+                                                   required/>
+                                        </div>
+                                    </div>
+
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
+                                            <button class="layui-btn" lay-submit lay-filter="formStep2">
+                                                &emsp;确认发送&emsp;
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div>
+                                <div style="text-align: center;margin-top: 90px;">
+                                    <i class="layui-icon layui-circle"
+                                       style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                                    <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                                        发送邮件成功
+                                    </div>
+                                    <div style="font-size: 14px;color: #666;margin-top: 20px;">请检查是否收到新邮件</div>
+                                </div>
+                                <div style="text-align: center;margin-top: 50px;">
+                                    <button class="layui-btn next">返回配置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                        <h3>说明</h3><br>
+                        <h4>QQ、163等邮箱需要开启SMTP服务并获取授权码</h4>
+                        <p>邮箱对应SMTP服务器ip、端口、SSL请在各邮箱官网查看</p>
+                        <p>配置完后请发送一封测试邮件判断配置是否正确</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="/js/lay-config.js?v=2.0.0" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'step'], function () {
+        var $ = layui.$,
+            form = layui.form,
+            step = layui.step;
+
+        function GetSMtpInfo() {
+            $.ajax({
+                url: "/api/user/smtp",
+                dataType: 'json',
+                type: 'get',
+                success: function (result) {
+                    if (result.code == 200) {
+                        layer.alert("已成功配置SMTP", {title: '提示', icon: 1})
+                    }
+                }
+            });
+        }
+        GetSMtpInfo();
+
+        step.render({
+            elem: '#stepForm',
+            filter: 'stepForm',
+            width: '100%', //设置容器宽度
+            stepWidth: '750px',
+            height: '500px',
+            stepItems: [{
+                title: 'SMTP配置'
+            }, {
+                title: '发送测试邮件'
+            }, {
+                title: '配置完成'
+            }]
+        });
+
+        form.on('submit(formStep)', function (data) {
+            var loading = layer.load();
+            $.ajax({
+                url: "/api/user/smtp",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                async: true,
+                type: 'post',
+                success: function (result) {
+                    layer.close(loading);
+                    if (result.code == 200) {
+                        step.next('#stepForm');
+                    } else {
+                        layer.alert(result.msg, {title: '提示', icon: 2})
+                    }
+                },
+                error: function (e) {
+                    layer.close(loading);
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+
+            return false;
+        });
+
+        form.on('submit(formStep2)', function (data) {
+            var loading = layer.load();
+            $.ajax({
+                url: "/api/user/smtp",
+                data: JSON.stringify(data.field),
+                contentType: 'application/json;charset=UTF-8',
+                dataType: 'json',
+                async: true,
+                type: 'put',
+                success: function (result) {
+                    layer.close(loading);
+                    if (result.code == 200) {
+                        step.next('#stepForm');
+                    } else {
+                        layer.alert(result.msg, {title: '提示', icon: 2})
+                    }
+                },
+                error: function (e) {
+                    layer.close(loading);
+                    layer.alert(JSON.stringify(e), {title: '提示', icon: 2})
+                }
+            })
+            return false;
+        });
+
+        $('.pre').click(function () {
+            step.pre('#stepForm');
+        });
+
+        $('.next').click(function () {
+            step.next('#stepForm');
+        });
+    })
+</script>
+</body>
+</html>
