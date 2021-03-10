@@ -10,8 +10,8 @@ CREATE TABLE "users"
     "phone"     varchar(20),
     "email"     varchar(100),
     "remark"    text,
-    "create_at" timestamp DEFAULT NULL,
-)
+    "create_at" timestamp DEFAULT NULL
+);
 
 /*用户登录ip锁定表*/
 DROP TABLE IF EXISTS "user_ip";
@@ -19,7 +19,7 @@ CREATE TABLE "user_ip"(
     "id" SERIAL PRIMARY KEY,
     "ip" varchar(50) NOT NULL UNIQUE,
     "lock" int,
-    "create_at" timestamp DEFAULT NULL,
+    "create_at" timestamp DEFAULT NULL
 );
 
 /*用户登录日志表*/
@@ -29,7 +29,7 @@ CREATE TABLE "user_log"(
     "username" varchar(20) NOT NULL,
     "ip" varchar(50) NOT NULL,
     "user_agent" text,
-    "create_at" timestamp DEFAULT NULL,
+    "create_at" timestamp DEFAULT NULL
 );
 
 /*用户操作记录表*/
