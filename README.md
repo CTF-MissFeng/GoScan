@@ -1,8 +1,6 @@
 # GoScan
 > GoScan是采用Golang语言编写的一款分布式综合资产管理系统，Web端负责展示数据和接受输入，Client端负责任务运行。
 
-> Demo：http://112.74.169.239:9999/   test/admin888@A
-
 > 下载地址：https://github.com/CTF-MissFeng/GoScan/releases
 
 ### 一、项目特点
